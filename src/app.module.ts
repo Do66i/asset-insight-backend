@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { AssetModule } from './asset/asset.module';
 
 @Module({
   imports: [
@@ -42,6 +43,8 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
     }),
 
     UsersModule,
+
+    AssetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
