@@ -18,12 +18,12 @@ export class UsersController {
   @Post()
   // service가 비동기(async)로 작동하므로 controller method에도 async 필요, 호출시 await 필요
   async create(@Body() createUserDto: CreateUserDto) {
-    console.log('>>>>>>> 📎 Controller HERE !', createUserDto);
-
     const result = await this.usersService.create(createUserDto);
     // 비즈니스 로직 처리를 위해 서비스의 create method로 data 토스함
     return {
-      result: result,
+      success: true,
+      message: '회원가입 비즈니스 로직 정상적으로 실행 & DB 확인해보슈',
+      data: result,
     };
   }
 
