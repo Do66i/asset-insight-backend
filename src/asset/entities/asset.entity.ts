@@ -1,5 +1,5 @@
 // src/asset/entities/asset.entity.ts
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'asset' })
@@ -8,10 +8,16 @@ export class Asset {
   id: number;
 
   @Column({ type: 'varchar', length: 100 })
-  name: string; // 자산 이름
+  name: string; // 종목명
 
-  @Column({ type: 'bigint', default: 0 })
-  amount: number; // 자산 총액
+  @Column({ type: 'decimal', precision: 15, scale: 4 })
+  quantity: number; // 보유 수량 (소수점 단위 거래 대비 decimal)
+
+  @Column({ type: 'decimal', precision: 15, scale: 4 })
+  avgPrice: number; // 평단가
+
+  @Column({ type: 'decimal', precision: 15, scale: 4, nullable: true })
+  currentPrice: number; // 현재가 (외부 시세 API로 주기 갱신, 아직 값 없을 수 있어 nullable)
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   category: string; // 자산 분류 (예: 국내 주식, 해외 주식)
@@ -24,7 +30,7 @@ export class Asset {
   @CreateDateColumn({ type: 'datetime' })
   createdAt: Date;
 
-  @CreateDateColumn({ type: 'datetime' })
+  @UpdateDateColumn({ type: 'datetime' })
   updateAt: Date;
 }
 
