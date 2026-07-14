@@ -8,6 +8,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm'; // Repository 주입용 데코레이터
 import { Repository } from 'typeorm'; // TypeORM core Repository class
 import { User } from './entities/user.entity';
+import { excludePassword } from '../common/utils/exclude-password.util';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +24,7 @@ export class UsersService {
   // !! DB query는 network를 타고 비동기로 작동함.
   async create(createUserDto: CreateUserDto) {
     //userRepository.create() : DTO data를 바탕으로 User entity object를 메모리상에 메모함
-    const { userId, email, nickname } = createUserDto;
+    const { userId, email, nickname, password } = createUserDto;
 
     // 아이디 중복 확인
     const existingId = await this.userRepository.findOne({ where: { userId } });
@@ -49,14 +51,19 @@ export class UsersService {
       });
     }
 
+    const saltRounds = 10; // 해싱강도
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+
     // !! 중요 !! : .save()를 호출 후 'await'로 기다려야 실제 MySQL DB에 INSERT query가 날아가서 영구저장함
     // 성공시 MySQL이 자동으로 생성해준 id와 가입시간(createAt)이 채워진 최종 user object return
 
-    const newUser = this.userRepository.create(createUserDto);
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword
+    });
     const savedUser = await this.userRepository.save(newUser);
-
-    // 성공 메세지 반환
-    return savedUser;
+    return excludePassword(savedUser);
   }
 
   findAll() {
