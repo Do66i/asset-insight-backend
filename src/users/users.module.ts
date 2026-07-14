@@ -13,5 +13,6 @@ import { User } from './entities/user.entity' // 엔티티 임포트
   ],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [TypeOrmModule], //note 다른 모듈에서 User 리포지토리를 재사용할 수 있도록 export
 })
 export class UsersModule {}

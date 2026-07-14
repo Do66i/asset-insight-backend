@@ -1,5 +1,6 @@
 // src/users/entities/user.entity.ts
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Asset } from '../../asset/entities/asset.entity';
 
 // @Entity()
 // 클래스 바로 위에 붙어서 이 클래스가 단순한 객체가 아니라, 데이터베이스의 '테이블'과 1:1로 연결된다는 것을 선언
@@ -44,4 +45,7 @@ export class User {
   // 수정이 발생할 때마다 자동으로 시간 기록
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Asset, (asset) => asset.user)
+  assets: Asset[];
 }
