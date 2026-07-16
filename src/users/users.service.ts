@@ -91,21 +91,21 @@ export class UsersService {
     if (userId) {
       const existingId = await this.userRepository.findOne({where: {userId}});
       if (existingId && existingId.id !== id) {
-        duplicatedFields.push('id');
+        duplicatedFields.push('아이디');
       }
     }
 
     if (email) {
       const existingEmail = await this.userRepository.findOne({ where: { email } });
       if (existingEmail && existingEmail.id !== id) {
-        duplicatedFields.push('email');
+        duplicatedFields.push('이메일');
       }
     }
 
     if (nickname) {
       const existingNickname = await this.userRepository.findOne({ where: { nickname } });
       if (existingNickname && existingNickname.id !== id) {
-        duplicatedFields.push('nickname');
+        duplicatedFields.push('닉네임');
       }
     }
 
