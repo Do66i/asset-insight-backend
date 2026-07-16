@@ -7,7 +7,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-// @Controller('user') 데코레이터 : 이 컨트롤러가 처리할 라우팅 경로를 지정
+//note @Controller('user') 데코레이터 : 이 컨트롤러가 처리할 라우팅 경로를 지정
 @Controller('user')
 export class UsersController {
   // 생성자를 통해 비즈니스 로직이 담긴 UserService instance 주입
@@ -22,28 +22,48 @@ export class UsersController {
     // 비즈니스 로직 처리를 위해 서비스의 create method로 data 토스함
     return {
       success: true,
-      message: '회원가입 비즈니스 로직 정상적으로 실행 & DB 확인해보슈',
+      message: '회원가입 비즈니스 로직 정상적으로 실행 !!!!! 축 하 축 하 !!!!',
       data: result,
     };
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const result = await this.usersService.findAll();
+    return {
+      success: true,
+      message: '전체 유저 목록 조회 ✅',
+      data: result,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const result = await this.usersService.findOne(+id);
+    return {
+      success: true,
+      message: '유저 조회 ✅',
+      data: result,
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const result = await this.usersService.update(+id, updateUserDto);
+    return {
+      success: true,
+      message: '유저 정보 변경 ✅',
+      data: result,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const result = await this.usersService.remove(+id);
+    return {
+      success: true,
+      message: '유저 삭제 ✅',
+      data: result,
+    };
   }
 }
