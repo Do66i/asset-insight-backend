@@ -8,27 +8,52 @@ export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
   @Post()
-  create(@Body() createAssetDto: CreateAssetDto) {
-    return this.assetService.create(createAssetDto);
+  async create(@Body() createAssetDto: CreateAssetDto) {
+    const result = await this.assetService.create(createAssetDto);
+    return {
+      success: true,
+      message: '자산 등록 성공',
+      data: result,
+    };
   }
 
   @Get()
-  findAll() {
-    return this.assetService.findAll();
+  async findAll() {
+    const result = await this.assetService.findAll();
+    return {
+      success: true,
+      message: '전체 자산 목록 조회 성공',
+      data: result,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.assetService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const result = await this.assetService.findOne(+id);
+    return {
+      success: true,
+      message: '자산 조회 성공',
+      data: result,
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAssetDto: UpdateAssetDto) {
-    return this.assetService.update(+id, updateAssetDto);
+  async update(@Param('id') id: string, @Body() updateAssetDto: UpdateAssetDto) {
+    const result = await this.assetService.update(+id, updateAssetDto);
+    return {
+      success: true,
+      message: '자산 정보 수정 성공',
+      data: result,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.assetService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const result = await this.assetService.remove(+id);
+    return {
+      success: true,
+      message: '자산 삭제 성공',
+      data: result,
+    };
   }
 }
