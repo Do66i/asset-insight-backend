@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,9 +21,7 @@ export class AssetService {
     const targetUser = await this.userRepository.findOne({ where: { userId } });
 
     if (!targetUser) {
-      this.throwConflict({
-        message: '존재하지 않는 유저입니다.',
-      });
+      throw new NotFoundException('존재하지 않는 유저입니다.'); // throwConflict(409) → NotFoundException(404)로 교체
     }
 
     const newAsset = this.assetRepository.create({
@@ -45,8 +43,8 @@ export class AssetService {
     return this.findAssetOrFail(id);
   }
 
-  async update(id: number, updateAssetDto: UpdateAssetDto) {
-    const asset = this.findAssetOrFail(id);
+  async update(id: number, updateAssetDto: UpdateAssetDto): Promise<Asset> {
+    const asset = await this.findAssetOrFail(id);
     const updatedAsset = await this.assetRepository.save({
       ...asset,
       ...updateAssetDto,
@@ -73,15 +71,5 @@ export class AssetService {
     }
 
     return asset;
-  }
-
-  private throwConflict(customFields: { message: string }): never {
-    const base = new ConflictException().getResponse() as object;
-    console.log('>>>>>>>', new ConflictException().getResponse());
-    throw new ConflictException({
-      ...base,
-      success: false,
-      ...customFields,
-    });
   }
 }

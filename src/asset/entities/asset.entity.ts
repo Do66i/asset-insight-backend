@@ -31,6 +31,6 @@ export class Asset {
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'datetime' })
-  updateAt: Date;
+  updatedAt: Date;
 }
 
