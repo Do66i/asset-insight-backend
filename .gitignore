@@ -54,3 +54,6 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Compodoc 생성 문서 (로컬/CI에서만 생성, 커밋 안 함)
+documentation/
