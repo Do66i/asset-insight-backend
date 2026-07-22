@@ -11,8 +11,9 @@ export class AssetController {
 
   @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 자산 등록 가능
   @Post()
-  async create(@Body() createAssetDto: CreateAssetDto) {
-    const result = await this.assetService.create(createAssetDto);
+  async create(@Body() createAssetDto: CreateAssetDto, @CurrentUser() user: { id: number; userId: string }) {
+    // 요청 body가 아니라 토큰 주인의 userId를 강제로 사용 (남 이름으로 등록하는 것 방지)
+    const result = await this.assetService.create(createAssetDto, user.userId);
     return {
       success: true,
       message: '자산 등록 성공',
