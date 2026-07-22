@@ -53,10 +53,9 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 수정 가능
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @CurrentUser() user: {id: number, userId: string}) {
-
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @CurrentUser() user: { id: number; userId: string }) {
     if (user.id !== +id) {
-      throw new ForbiddenException('본인 계정만 수정할 수 있음.')
+      throw new ForbiddenException('본인 계정만 수정할 수 있음.');
     }
 
     const result = await this.usersService.update(+id, updateUserDto);
@@ -69,10 +68,10 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 삭제 가능
   @Delete(':id')
-  async remove(@Param('id') id: string, @CurrentUser() user: {id: number, userId: string}) {
+  async remove(@Param('id') id: string, @CurrentUser() user: { id: number; userId: string }) {
     // 본인 계정만 삭제 가능 - 토큰 주인(user.id)과 삭제 대상(id)가 다르면 차단
     if (user.id !== +id) {
-      throw new ForbiddenException('본인 계정만 삭제할 수 있슴다,,!')
+      throw new ForbiddenException('본인 계정만 삭제할 수 있슴다,,!');
     }
     const result = await this.usersService.remove(+id);
     return {

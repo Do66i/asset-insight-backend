@@ -8,8 +8,8 @@ import { AuthService } from '../auth.service';
 
 @Injectable() //
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private  readonly authService: AuthService) {
-  super({ usernameField: 'userId'}); // 기본은 'username' 필드명, 우리는 userId로 받으니까 변경
+  constructor(private readonly authService: AuthService) {
+    super({ usernameField: 'userId' }); // 기본은 'username' 필드명, 우리는 userId로 받으니까 변경
   }
 
   // Passport가 요청 body에서 userId, password를 자동으로 꺼내서 이 메서드에 넘겨줌

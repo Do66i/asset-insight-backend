@@ -53,7 +53,7 @@ import { AuthModule } from './auth/auth.module';
   providers: [AppService],
 })
 export class AppModule implements NestModule {
-  configure(consumer:MiddlewareConsumer):any {
+  configure(consumer: MiddlewareConsumer): any {
     consumer
       .apply(LoggerMiddleware) // LoggerMiddleware를 모든 라우팅 경로에 적용
       .forRoutes('*'); // '*' : 모든 라우팅 경로에 적용

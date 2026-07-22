@@ -182,6 +182,6 @@ describe('UsersService', () => {
       const result = await service.findByUserId('no_such_user');
 
       expect(result).toBeNull();
-    })
-  })
+    });
+  });
 });
