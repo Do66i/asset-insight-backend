@@ -2,10 +2,12 @@
 // 클라이언트와의 접점
 // 역할 : FE HTTP 요청을 받아서 데이터(DTO)가 유효한지 검증 후 비즈니스 로직을 담당하는 Service에게 넘겨주는 역할
 // 목표 : Controller는 라우팅 및 단순 중계 역할에 집중하여야함
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ForbiddenException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { CurrentUser } from '../auth/decorators/current-user/current-user.decorator';
 
 //note @Controller('user') 데코레이터 : 이 컨트롤러가 처리할 라우팅 경로를 지정
 @Controller('user')
@@ -27,6 +29,7 @@ export class UsersController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 전체 유저 목록 조회 가능
   @Get()
   async findAll() {
     const result = await this.usersService.findAll();
@@ -37,6 +40,7 @@ export class UsersController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 조회 가능
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const result = await this.usersService.findOne(+id);
@@ -47,8 +51,13 @@ export class UsersController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 수정 가능
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @CurrentUser() user: { id: number; userId: string }) {
+    if (user.id !== +id) {
+      throw new ForbiddenException('본인 계정만 수정할 수 있음.');
+    }
+
     const result = await this.usersService.update(+id, updateUserDto);
     return {
       success: true,
@@ -57,8 +66,13 @@ export class UsersController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 삭제 가능
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @CurrentUser() user: { id: number; userId: string }) {
+    // 본인 계정만 삭제 가능 - 토큰 주인(user.id)과 삭제 대상(id)가 다르면 차단
+    if (user.id !== +id) {
+      throw new ForbiddenException('본인 계정만 삭제할 수 있슴다,,!');
+    }
     const result = await this.usersService.remove(+id);
     return {
       success: true,

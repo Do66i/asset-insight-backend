@@ -2,6 +2,7 @@
 import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 // note: currentPrice ? 사용자가 입력하는 값이 아니라 api가 나중에 채워주는 값이기 때문에 생성시점에선 필요없음
+// note: userId는 더 이상 요청 body로 안 받음 — 로그인한 사람(토큰)의 userId를 서버가 강제로 사용
 export class CreateAssetDto {
   @IsNotEmpty()
   @IsString()
@@ -20,8 +21,4 @@ export class CreateAssetDto {
   @IsNotEmpty()
   @IsString()
   category: string; // 자산 분류
-
-  @IsNotEmpty()
-  @IsString()
-  userId: string; // 자산을 등록할 대상 유저 식별자 (FK 조회용, 엔티티엔 없는 요청 전용 필드)
 }

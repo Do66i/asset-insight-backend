@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm'; // TypeORM 모듈 임포트
-import { User } from './entities/user.entity' // 엔티티 임포트
+import { User } from './entities/user.entity'; // 엔티티 임포트
 
 @Module({
   imports: [
@@ -13,6 +13,10 @@ import { User } from './entities/user.entity' // 엔티티 임포트
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [TypeOrmModule], //note 다른 모듈에서 User 리포지토리를 재사용할 수 있도록 export
+  exports: [TypeOrmModule, UsersService],
+  /**
+   * TypeOrmModule : 다른 모듈에서 User 리포지토리를 재사용할 수 있도록 export
+   * UsersService : AuthModule에서 로그인 검증 시 UsersService 재사용
+   */
 })
 export class UsersModule {}

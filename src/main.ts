@@ -3,11 +3,20 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 글로벌 프리픽스 설정 (예: localhost:3000/api/users 형태로 라우팅 경로 통일)
+  // 기본 보안 헤더 설정 (XSS, clickjacking 등 기본 방어)
+  app.use(helmet());
+
+  // CORS 설정: 프론트(Nuxt)가 다른 오리진에서 API 호출할 수 있도록 허용
+  app.enableCors({
+    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000', // 프론트 개발 서버 주소
+    credentials: true, // 쿠키/인증 헤더 포함 요청 허용 (나중에 JWT 붙일 때 필요)
+  });
+
   app.setGlobalPrefix('api');
 
   // 글로벌 파이프 등록: 전역에서 DTO 검증을 수행하도록 설정

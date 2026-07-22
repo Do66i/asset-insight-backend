@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AssetModule } from './asset/asset.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -45,12 +46,14 @@ import { AssetModule } from './asset/asset.module';
     UsersModule,
 
     AssetModule,
+
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
-  configure(consumer:MiddlewareConsumer):any {
+  configure(consumer: MiddlewareConsumer): any {
     consumer
       .apply(LoggerMiddleware) // LoggerMiddleware를 모든 라우팅 경로에 적용
       .forRoutes('*'); // '*' : 모든 라우팅 경로에 적용

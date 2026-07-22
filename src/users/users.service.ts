@@ -89,7 +89,7 @@ export class UsersService {
     const duplicatedFields: string[] = [];
 
     if (userId) {
-      const existingId = await this.userRepository.findOne({where: {userId}});
+      const existingId = await this.userRepository.findOne({ where: { userId } });
       if (existingId && existingId.id !== id) {
         duplicatedFields.push('아이디');
       }
@@ -127,7 +127,7 @@ export class UsersService {
       ...user,
       ...updateUserDto,
       ...(hashedPassword && { password: hashedPassword }),
-    })
+    });
 
     return excludePassword(updateUser);
   }
@@ -135,9 +135,9 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.findUserOrFail(id);
 
-    await  this.userRepository.remove(user);
+    await this.userRepository.remove(user);
 
-    return { id }
+    return { id };
   }
 
   private throwConfilct(customFields: { message: string }) {
@@ -157,5 +157,11 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  // 로그인 검증 전용: userId(문자열)로 원본 엔티티 조회 (비밀번호 포함)
+  // AuthService가 로그인 시 비밀번호 비교를 위해 호출함
+  async findByUserId(userId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { userId } });
   }
 }

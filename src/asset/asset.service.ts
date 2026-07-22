@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Asset } from './entities/asset.entity';
 import { Repository } from 'typeorm';
+import { excludePassword } from '../common/utils/exclude-password.util';
 
 @Injectable()
 export class AssetService {
@@ -15,8 +16,9 @@ export class AssetService {
     private readonly userRepository: Repository<User>, // user repo (유저 검증)
   ) {}
 
-  async create(createAssetDto: CreateAssetDto): Promise<Asset> {
-    const { userId, name, quantity, avgPrice, category } = createAssetDto;
+  // userId는 더 이상 DTO(요청 body)가 아니라 컨트롤러가 토큰에서 뽑아 별도로 넘겨줌 (신뢰 문제 해결)
+  async create(createAssetDto: CreateAssetDto, userId: string): Promise<Asset> {
+    const { name, quantity, avgPrice, category } = createAssetDto;
 
     const targetUser = await this.userRepository.findOne({ where: { userId } });
 
@@ -32,7 +34,9 @@ export class AssetService {
       user: targetUser,
     });
 
-    return await this.assetRepository.save(newAsset);
+    const savedAsset = await this.assetRepository.save(newAsset);
+    // 응답에 user 관계가 포함되므로, 비밀번호(해시 포함) 노출 방지
+    return { ...savedAsset, user: excludePassword(savedAsset.user) } as Asset;
   }
 
   async findAll(): Promise<Asset[]> {
@@ -40,7 +44,8 @@ export class AssetService {
   }
 
   async findOne(id: number): Promise<Asset> {
-    return this.findAssetOrFail(id);
+    const asset = await this.findAssetOrFail(id);
+    return this.excludeUserPassword(asset);
   }
 
   async update(id: number, updateAssetDto: UpdateAssetDto): Promise<Asset> {
@@ -50,7 +55,7 @@ export class AssetService {
       ...updateAssetDto,
     });
 
-    return updatedAsset;
+    return this.excludeUserPassword(updatedAsset);
   }
 
   async remove(id: number): Promise<{ id: number }> {
@@ -71,5 +76,11 @@ export class AssetService {
     }
 
     return asset;
+  }
+
+  // 응답용: user 관계에서 비밀번호(해시 포함) 제외한 자산 반환
+  // findOne, update, remove가 최종적으로 클라이언트에 내보낼 때 이걸 거침
+  private excludeUserPassword(asset: Asset): Asset {
+    return { ...asset, user: excludePassword(asset.user) } as Asset;
   }
 }
