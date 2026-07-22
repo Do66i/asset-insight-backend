@@ -163,4 +163,25 @@ describe('UsersService', () => {
       expect(result).toEqual({ id: 1 });
     });
   });
+
+  describe('findByUserId', () => {
+    it('존재하는 userId면 비밀번호 포함된 원본 유저를 반환', async () => {
+      const mockUser = { id: 1, userId: 'doto1', password: 'hashed_password' };
+      userRepository.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.findByUserId('doto1');
+
+      // 비밀번호가 그대로 남아있어야 함 (findOne처럼 excludePassword 씌우면 안 됨)
+      expect(result).toHaveProperty('password');
+      expect(result).toEqual(mockUser);
+    });
+
+    it('존재하지 않는 userId면 null 반환', async () => {
+      userRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.findByUserId('no_such_user');
+
+      expect(result).toBeNull();
+    })
+  })
 });
