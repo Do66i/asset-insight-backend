@@ -17,8 +17,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'), // 서명용 비밀 열쇠
-        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') }, // 유효기간
+        secret: configService.getOrThrow('JWT_SECRET'), // 서명용 비밀 열쇠
+        signOptions: { expiresIn: configService.getOrThrow('JWT_EXPIRES_IN') }, // 유효기간
       }),
     }),
   ],

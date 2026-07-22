@@ -28,8 +28,7 @@ export class AuthService {
     }
 
     // 검증 통과 — 비밀번호는 이후 응답/토큰에 포함되면 안 되므로 제외
-    const { password: _, ...result } = user;
-    return result;
+    return { id: user.id, userId: user.userId };
   }
 
   // 검증 통과한 유저 정보로 JWT 발급

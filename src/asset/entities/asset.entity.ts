@@ -33,4 +33,3 @@ export class Asset {
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
 }
-

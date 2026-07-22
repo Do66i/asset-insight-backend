@@ -89,7 +89,7 @@ export class UsersService {
     const duplicatedFields: string[] = [];
 
     if (userId) {
-      const existingId = await this.userRepository.findOne({where: {userId}});
+      const existingId = await this.userRepository.findOne({ where: { userId } });
       if (existingId && existingId.id !== id) {
         duplicatedFields.push('아이디');
       }
@@ -127,7 +127,7 @@ export class UsersService {
       ...user,
       ...updateUserDto,
       ...(hashedPassword && { password: hashedPassword }),
-    })
+    });
 
     return excludePassword(updateUser);
   }
@@ -135,9 +135,9 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.findUserOrFail(id);
 
-    await  this.userRepository.remove(user);
+    await this.userRepository.remove(user);
 
-    return { id }
+    return { id };
   }
 
   private throwConfilct(customFields: { message: string }) {
