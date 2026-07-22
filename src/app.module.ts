@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AssetModule } from './asset/asset.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -45,6 +46,8 @@ import { AssetModule } from './asset/asset.module';
     UsersModule,
 
     AssetModule,
+
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
