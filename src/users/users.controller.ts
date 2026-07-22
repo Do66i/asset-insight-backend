@@ -53,7 +53,12 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt')) // 로그인한 사람만 수정 가능
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @CurrentUser() user: {id: number, userId: string}) {
+
+    if (user.id !== +id) {
+      throw new ForbiddenException('본인 계정만 수정할 수 있음.')
+    }
+
     const result = await this.usersService.update(+id, updateUserDto);
     return {
       success: true,
