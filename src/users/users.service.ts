@@ -46,9 +46,7 @@ export class UsersService {
     }
 
     if (duplicatedFields.length > 0) {
-      this.throwConfilct({
-        message: `이미 존재하는 ${duplicatedFields.join(', ')}입니다.`,
-      });
+      throw new ConflictException(`이미 존재하는 ${duplicatedFields.join(', ')}입니다.`);
     }
 
     const saltRounds = 10; // 해싱강도
@@ -110,9 +108,7 @@ export class UsersService {
     }
 
     if (duplicatedFields.length > 0) {
-      this.throwConfilct({
-        message: `이미 존재하는 ${duplicatedFields.join(', ')}입니다.`,
-      });
+      throw new ConflictException(`이미 존재하는 ${duplicatedFields.join(', ')}입니다.`);
     }
 
     // 비밀번호가 수정 요청에 포함된 경우만 재해싱
@@ -138,16 +134,6 @@ export class UsersService {
     await this.userRepository.remove(user);
 
     return { id };
-  }
-
-  private throwConfilct(customFields: { message: string }) {
-    const base = new ConflictException().getResponse() as object;
-    console.log('>>>>>>>', new ConflictException().getResponse());
-    throw new ConflictException({
-      ...base,
-      success: false,
-      ...customFields,
-    });
   }
 
   private async findUserOrFail(id: number): Promise<User> {
