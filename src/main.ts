@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import helmet from 'helmet';
+import { HttpExceptionFilter } from './common/filters/http-exception/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,6 +30,9 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new LoggingInterceptor());
+
+  // 전역 예외 필터 등록 : 모든 에러 응답을 동일한 형태로
+  app.useGlobalFilters(new HttpExceptionFilter())
 
   await app.listen(process.env.PORT ?? 3000);
 }
