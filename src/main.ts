@@ -5,9 +5,12 @@ import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import helmet from 'helmet';
 import { HttpExceptionFilter } from './common/filters/http-exception/http-exception.filter';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // 정적 파일 서빙(useStaticAssets)을 쓰려면 NestExpressApplication 타입으로 생성해야 함
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // 기본 보안 헤더 설정 (XSS, clickjacking 등 기본 방어)
   app.use(helmet());
@@ -19,6 +22,8 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+  // 업로드된 이미지 정적 서빙: /uploads/board/xxx.jpg 형태로 접근 가능
+  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
 
   // 글로벌 파이프 등록: 전역에서 DTO 검증을 수행하도록 설정
   app.useGlobalPipes(
@@ -32,7 +37,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   // 전역 예외 필터 등록 : 모든 에러 응답을 동일한 형태로
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3000);
 }

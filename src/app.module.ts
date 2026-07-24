@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AssetModule } from './asset/asset.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -48,6 +49,8 @@ import { AuthModule } from './auth/auth.module';
     AssetModule,
 
     AuthModule,
+
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

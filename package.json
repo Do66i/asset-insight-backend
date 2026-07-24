@@ -40,7 +40,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^1.0.0"
+    "typeorm": "^1.0.0",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^2.0.0",
@@ -52,10 +53,12 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.2.0",
     "@types/node": "^24.0.0",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^7.0.0",
+    "@types/uuid": "^10.0.0",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
