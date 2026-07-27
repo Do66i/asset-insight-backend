@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
@@ -11,25 +11,34 @@ export class BoardController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Body() createBoardDto: CreateBoardDto, @CurrentUser() writer:{ id: number, userId: string }) {
-
+  async create(@Body() createBoardDto: CreateBoardDto, @CurrentUser() writer: { id: number; userId: string }) {
     const result = await this.boardService.create(createBoardDto, writer.id);
 
     return {
       success: true,
       message: '게시물 등록 성공',
       data: result,
-    }
+    };
   }
 
   @Get()
-  findAll() {
-    return this.boardService.findAll();
+  async findAll() {
+    const result = await this.boardService.findAll();
+    return {
+      success: true,
+      message: '전체 게시물 목록 조회 성공',
+      data: result,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boardService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.boardService.findOne(+id);
+    return {
+      success: true,
+      message: `${id}번 게시물 조회 성공`,
+      data: result,
+    };
   }
 
   @Patch(':id')
