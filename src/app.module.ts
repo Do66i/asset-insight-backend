@@ -8,6 +8,8 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AssetModule } from './asset/asset.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
+import { BoardModule } from './board/board.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -51,6 +53,10 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
 
     UploadModule,
+
+    BoardModule,
+
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
