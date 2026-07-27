@@ -36,8 +36,29 @@ export class BoardService {
     return await this.boardRepository.save(board);
   }
 
-  async findAll() {
-    return `This action returns all board`;
+  /**
+   * 게시글 목록 조회
+   * @returns 전체 게시글 목록 (작성자의 userId, nickname만 포함)
+   */
+  async findAll() :Promise<Board[]> {
+    // find() : 조건 없이 전체 로우를 조회하는 기본 메서드
+    // relations : 연관된 엔티티(writer)를 JOIN해서 같이 가져오라는 옵션
+    //   -> 이거 없으면 board.writer가 undefined로 나옴 (지연 로딩 안 하니까)
+    // select : 실제로 응답에 포함할 컬럼만 골라서 반환 (writer.password 같은 민감 정보 노출 방지)
+    return await this.boardRepository.find({
+      relations: {writer: true},
+      select: {
+        id: true,
+        title: true,
+        viewCount: true,
+        createdAt: true,
+        writer: {
+          userId: true,
+          nickname: true
+        }
+      },
+      order: { createdAt : 'DESC'}
+    });
   }
 
   async findOne(id: number) {
