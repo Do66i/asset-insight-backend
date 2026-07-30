@@ -1,5 +1,5 @@
 // src/board/board.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -78,6 +78,7 @@ export class BoardService {
     // 반환값(UpdateResult)의 affected : 실제로 몇 개 로우가 수정됐는지 알려주는 숫자
     //   -> 해당 id가 없으면 UPDATE 대상이 없어서 affected가 0으로 나옴
     //   -> 이 값으로 "존재하는 게시글인지"까지 같이 판단 가능 (별도 조회 쿼리 불필요)
+
     const { affected } = await this.boardRepository.increment({ id }, 'viewCount', 1);
     if (!affected) {
       throw new NotFoundException(`존재하지 않는 게시물입니다. (id: ${id})`);
@@ -99,8 +100,16 @@ export class BoardService {
     return board as BoardDetail;
   }
 
-  async update(id: number, updateBoardDto: UpdateBoardDto) {
-    return `This action updates a #${id} board`;
+  async update(id: number, updateBoardDto: UpdateBoardDto, requesterId: number) {
+    const board = await this.findBoardOrFail(id);
+    if (board.writer.id !== requesterId) {
+      throw new ForbiddenException('본인 게시물만 수정할 수 있습니다.');
+    }
+    const updatedBoard = await this.boardRepository.save({
+      ...board,
+      ...updateBoardDto,
+    });
+    return updatedBoard;
   }
 
   async remove(id: number) {

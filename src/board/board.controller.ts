@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, ForbiddenException } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
@@ -41,9 +41,17 @@ export class BoardController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto) {
-    return this.boardService.update(+id, updateBoardDto);
+  async update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto, @CurrentUser() writer: { id: number; userId: string }) {
+
+    const result = await this.boardService.update(+id, updateBoardDto, writer.id);
+
+    return {
+      success: true,
+      message: `${id}번 게시물 수정 성공`,
+      data: result,
+    };
   }
 
   @Delete(':id')
