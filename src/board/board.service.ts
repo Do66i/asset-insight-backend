@@ -112,8 +112,16 @@ export class BoardService {
     return updatedBoard;
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} board`;
+  async remove(id: number, requesterId: number): Promise<{ id: number }> {
+    const board = await this.findBoardOrFail(id);
+
+    if (board.writer.id !== requesterId) {
+      throw new ForbiddenException('본인 게시물만 수정할 수 있습니다.');
+    }
+
+    await this.boardRepository.remove(board);
+
+    return { id };
   }
 
   // 내부 전용: ID로 게시물 엔티티 원본 조회

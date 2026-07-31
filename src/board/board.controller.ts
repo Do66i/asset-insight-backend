@@ -44,7 +44,6 @@ export class BoardController {
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto, @CurrentUser() writer: { id: number; userId: string }) {
-
     const result = await this.boardService.update(+id, updateBoardDto, writer.id);
 
     return {
@@ -54,8 +53,15 @@ export class BoardController {
     };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boardService.remove(+id);
+  async remove(@Param('id') id: string, @CurrentUser() writer: { id: number; userId: string }) {
+    const result = await this.boardService.remove(+id,writer.id);
+
+    return {
+      success: true,
+      message: `${id}번 게시물 삭제 성공`,
+      data: result,
+    };
   }
 }
