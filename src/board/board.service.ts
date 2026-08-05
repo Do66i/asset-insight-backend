@@ -4,6 +4,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
+import { BoardImage } from './entities/board-image.entity';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 
@@ -24,6 +25,9 @@ export class BoardService {
   constructor(
     @InjectRepository(Board)
     private readonly boardRepository: Repository<Board>,
+    // BoardImage 전용 repository도 따로 주입받음 (다른 entity라서 별도 Repository 필요)
+    @InjectRepository(BoardImage)
+    private readonly boardImageRepository: Repository<BoardImage>,
   ) {}
 
   /**
@@ -34,6 +38,10 @@ export class BoardService {
    */
 
   async create(createBoardDto: CreateBoardDto, writerId: number) {
+    // imageUrls는 Board 엔티티 필드가 아니라 BoardImage 저장용 별도 데이터라서
+    // 구조 분해로 분리해둠 (board에는 title, content만 남게)
+    const { imageUrls, ...boardData } = createBoardDto;
+
     // repository.create() : DB에 INSERT 하기 전, 메모리 상에 엔티티 객체를 만들어주는 메서드
     // 아직 DB에 저장된 게 아니라, JS 객체로만 존재하는 상태
 
@@ -44,8 +52,23 @@ export class BoardService {
 
     // repository.save() : 실제로 DB에 INSERT 쿼리를 날리고, await로 완료될 때까지 기다림
     // 저장 성공 시, DB가 자동 생성한 id/createdAt까지 채워진 최종 객체를 반환
+    const savedBoard = await this.boardRepository.save(board);
 
-    return await this.boardRepository.save(board);
+    // 첨부 이미지가 있으면, 방금 저장된 게시글의 id로 BoardImage 레코드들을 만들어 저장
+    // imageUrls가 없거나 빈 배열이면 이 블록 자체를 건너뜀
+    if (imageUrls && imageUrls.length > 0) {
+      // map() : 배열의 각 URL 문자열을, BoardImage 엔티티 형태의 객체로 하나씩 변환
+      const boardImages = imageUrls.map((url) =>
+        this.boardImageRepository.create({
+          url,
+          board: savedBoard, // 방금 생성된 게시글과 관계 연결 (board.id가 FK로 채워짐)
+        }),
+      );
+      // save()에 배열을 넘기면 여러 로우를 한 번에 INSERT
+      await this.boardImageRepository.save(boardImages);
+    }
+
+    return savedBoard;
   }
 
   /**
